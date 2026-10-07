@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.moogratalab;
+package com.example.moogata.model;
 
 /**
  *
@@ -12,25 +12,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Employee {
-
-        private int id;           
-        private String name;       
-        private String position;   
-        private String password;   
-        private int role;
-        
-        public Employee(int id, String name, String position, String password, int role) {
+    private int id;            
+    private String name;       
+    private String position;   
+    private String password;   
+    private int role; 
+    public Employee(int id, String name, String position, String password, int role) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.password = password;
         this.role = role;
     }
-
     public Employee(String name, String position, String password, int role) {
         this(-1, name, position, password, role);
     }
-
     public Employee() {
         this.id = -1;
     }
