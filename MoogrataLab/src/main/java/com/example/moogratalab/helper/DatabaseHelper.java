@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.example.moogratalab.helper;
 
-/**
- *
- * @author USER
- */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,12 +10,13 @@ import java.util.logging.Logger;
 
 public class DatabaseHelper {
     private static final Logger LOG = Logger.getLogger(DatabaseHelper.class.getName());
-    public static final String DB_FILE = "moogata.db";
+    // ตั้งชื่อไฟล์ DB ให้ตรงกับไฟล์ใน SQLiteStudio (moograta.db)
+    public static final String DB_FILE = "moograta.db"; 
     private static final String URL = "jdbc:sqlite:" + DB_FILE;
     private static Connection conn;
 
-    private DatabaseHelper() {
-    }
+    private DatabaseHelper() {}
+
     public static synchronized Connection getConnect() {
         if (conn == null) {
             try {
@@ -34,11 +27,7 @@ public class DatabaseHelper {
                     pragma.execute("PRAGMA foreign_keys = ON");
                 } finally {
                     if (pragma != null) {
-                        try {
-                            pragma.close();
-                        } catch (SQLException closeEx) {
-                            System.err.println("Close pragma failed: " + closeEx.getMessage());
-                        }
+                        try { pragma.close(); } catch (SQLException closeEx) { System.err.println("Close pragma failed: " + closeEx.getMessage()); }
                     }
                 }
                 LOG.info("Connected to SQLite: " + DB_FILE);
@@ -48,6 +37,7 @@ public class DatabaseHelper {
         }
         return conn;
     }
+
     public static synchronized void close() {
         if (conn != null) {
             try {
@@ -60,7 +50,6 @@ public class DatabaseHelper {
         }
     }
 
-    /** ดึงค่า id ที่ AUTOINCREMENT สร้างให้ล่าสุด จาก statement ที่เพิ่ง executeUpdate */
     public static int getInsertedId(Statement stmt) {
         ResultSet keys = null;
         try {
@@ -72,11 +61,7 @@ public class DatabaseHelper {
             LOG.log(Level.WARNING, "อ่าน generated key ไม่สำเร็จ", ex);
         } finally {
             if (keys != null) {
-                try {
-                    keys.close();
-                } catch (SQLException closeEx) {
-                    System.err.println("Close keys failed: " + closeEx.getMessage());
-                }
+                try { keys.close(); } catch (SQLException closeEx) { System.err.println("Close keys failed: " + closeEx.getMessage()); }
             }
         }
         return -1;

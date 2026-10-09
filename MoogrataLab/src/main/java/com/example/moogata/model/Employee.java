@@ -12,6 +12,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Employee {
+
+    public static String get(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     private int id;            
     private String name;       
     private String position;   
