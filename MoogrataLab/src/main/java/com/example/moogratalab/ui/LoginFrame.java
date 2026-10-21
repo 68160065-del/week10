@@ -119,6 +119,7 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // getPassword() คืน char[] (ไม่ใช่ String) — เพื่อความปลอดภัย ต้องแปลงก่อนใช้
+        // getPassword() คืน char[] (ไม่ใช่ String) — เพื่อความปลอดภัย ต้องแปลงก่อนใช้
         String login = txtLogin.getText().trim();
         String password = new String(txtPassword.getPassword());
 
@@ -127,25 +128,21 @@ public class LoginFrame extends javax.swing.JFrame {
 
         if (employee == null) {
             JOptionPane.showMessageDialog(this,
-                    "Incorrect UserName or Password",
+                    "Incorrect username or password",
                     "Login failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // (Step 6 จะเปลี่ยนข้อความชั่วคราวนี้เป็นการเปิดหน้าจัดการพนักงาน)
         JOptionPane.showMessageDialog(this,
-                "Wellcom " + employee.getName() + " (" + employee.getPosition() + ")",
-                "Login Successfull", JOptionPane.INFORMATION_MESSAGE);
-              // เดิม (Step 4):  JOptionPane.showMessageDialog(this, "ยินดีต้อนรับ ...");
-              // เปลี่ยนเป็น:
-              // กฎธุรกิจ: หน้าจัดการพนักงานเปิดเฉพาะผู้จัดการ (role = 1) เท่านั้น
+                "welcome " + employee.getName() + " (" + employee.getPosition() + ")",
+                "Login failed", JOptionPane.INFORMATION_MESSAGE);
         if (employee.getRole() != 1) {
             JOptionPane.showMessageDialog(this,
-                    employee.getName() + " ไม่ใช่ผู้จัดการ จึงเข้าหน้าจัดการพนักงานไม่ได้",
-                    "ไม่มีสิทธิ์เข้าใช้", JOptionPane.WARNING_MESSAGE);
+                    employee.getName() + "Not a manager; therefore, unable to access the employee management page.",
+                    "No access rights", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         EmployeeFrame employeeFrame = new EmployeeFrame(employee);
         employeeFrame.setLocationRelativeTo(this);
         employeeFrame.setVisible(true);

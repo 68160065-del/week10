@@ -11,24 +11,33 @@ package com.example.moogratalab.ui;
 import com.example.moogata.model.Employee;
 import com.example.moogata.service.EmployeeService;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
+
 public class EmployeeFrame extends javax.swing.JFrame {
-        /** Logged-in employee (kept for displaying in lblWelcome and preventing self-account deletion) */
-private  Employee loginUser;
-private final EmployeeService employeeService = new EmployeeService();
 
-/** ID of the row currently being edited (-1 = not editing, i.e., insert/new mode) */
-private int editingId = -1;
+    /**
+     * Logged-in employee (kept for displaying in lblWelcome and preventing
+     * self-account deletion)
+     */
+    private Employee loginUser;
+    private final EmployeeService employeeService = new EmployeeService();
 
-public EmployeeFrame(Employee loginUser) {
-    this.loginUser = loginUser;
-    initComponents();
-    tblEmployee.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    tblEmployee.getTableHeader().setReorderingAllowed(false); // Lock column order — prevent dragging/swapping columns which causes wrong column index reading
-    // (The listener line binding "row click → populate form" will be added in Step 7)
-    lblWelcome.setText("User: " + loginUser.getName() + " (" + loginUser.getPosition() + ")");
-    showEmployees();
-}
+    /**
+     * * ID of the row currently being edited (-1 = not editing, i.e.,
+     * insert/new* mode
+     */
+    private int editingId = -1;
+
+    public EmployeeFrame(Employee loginUser) {
+        this.loginUser = loginUser;
+        initComponents();
+        tblEmployee.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblEmployee.getTableHeader().setReorderingAllowed(false);
+        tblEmployee.getSelectionModel().addListSelectionListener(this::tblEmployeeValueChanged);
+        lblWelcome.setText("User: " + loginUser.getName() + " (" + loginUser.getPosition() + ")");
+        showEmployees();
+    }
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EmployeeFrame.class.getName());
 
     /**
@@ -51,7 +60,6 @@ public EmployeeFrame(Employee loginUser) {
         lblLogin = new javax.swing.JLabel();
         txtLogin = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JTextField();
         lblPosition = new javax.swing.JLabel();
         txtPosition = new javax.swing.JTextField();
         lblRole = new javax.swing.JLabel();
@@ -62,11 +70,12 @@ public EmployeeFrame(Employee loginUser) {
         btnRefresh = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblEmployee = new javax.swing.JTable();
+        txtPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         lblWelcome.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblWelcome.setText("User: Somjai(Manger)");
+        lblWelcome.setText("User: ");
 
         lblLogin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblLogin.setText("User: ");
@@ -83,8 +92,10 @@ public EmployeeFrame(Employee loginUser) {
         cmbRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Employee", "Manager" }));
 
         btnSave.setText("Save");
+        btnSave.addActionListener(this::btnSaveActionPerformed);
 
         btnNew.setText("New");
+        btnNew.addActionListener(this::btnNewActionPerformed);
 
         btnDelete.setText("Delete");
         btnDelete.addActionListener(this::btnDeleteActionPerformed);
@@ -112,33 +123,33 @@ public EmployeeFrame(Employee loginUser) {
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(lblLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblRole, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblPosition)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                                    .addComponent(txtPassword)))
+                            .addComponent(lblWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtPosition, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                                .addComponent(cmbRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btnRefresh))))
+                            .addComponent(lblRole, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPosition)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtPosition, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                        .addComponent(cmbRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnRefresh))
                 .addContainerGap(17, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
@@ -165,7 +176,7 @@ public EmployeeFrame(Employee loginUser) {
                             .addComponent(txtLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(11, 11, 11)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
@@ -183,12 +194,85 @@ public EmployeeFrame(Employee loginUser) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+        int row = tblEmployee.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Select an employee from the table before deleting.",
+                    "Not yet selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (Integer) tblEmployee.getValueAt(row, 0);
+        String selectedName = (String) tblEmployee.getValueAt(row, 1);
+
+        // กฎธุรกิจ: ห้ามลบบัญชีที่กำลังล็อกอินอยู่ (กันผู้จัดการลบตัวเองจนเข้าระบบไม่ได้)
+        if (selectedName.equals(loginUser.getName())) {
+            JOptionPane.showMessageDialog(this,
+                    "Cannot delete the account currently in use.",
+                    "Cannot be deleted", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "I want to delete an employee. " + selectedName + " Is it right?",
+                "Confirm deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        int deleted = employeeService.delete(id);
+        if (deleted > 0) {
+            clearForm();
+            showEmployees();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Deletion failed (it may have already been deleted)",
+                    "Deletion failed", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
-        // TODO add your handling code here:
+        showEmployees();
     }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        String name = txtLogin.getText().trim();
+        String position = txtPosition.getText().trim();
+        String password = new String(txtPassword.getPassword());
+
+        if (name.isEmpty() || position.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Fill in all fields before saving.",
+                    "Incomplete information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Employee emp = new Employee(name, position, password, getSelectedRole());
+
+        if (editingId > 0) {
+            // มีแถวถูกเลือกอยู่ = โหมดแก้ไข (ใช้ id ของแถวที่คลิก)
+            emp.setId(editingId);
+            if (employeeService.update(emp) == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Edit unsuccessful (login name already in use, or original record not found)",
+                        "Edit unsuccessful", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } else {
+            // ฟอร์มว่างจากการล้าง = โหมดเพิ่มใหม่
+            if (employeeService.save(emp) == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Save failed (login name is already in use by someone else)",
+                        "Save failed", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        clearForm();
+        showEmployees();
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
+        clearForm();
+    }//GEN-LAST:event_btnNewActionPerformed
 
     /**
      * @param args the command line arguments
@@ -229,18 +313,49 @@ public EmployeeFrame(Employee loginUser) {
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JTable tblEmployee;
     private javax.swing.JTextField txtLogin;
-    private javax.swing.JTextField txtPassword;
+    private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPosition;
     // End of variables declaration//GEN-END:variables
 
-    /*** อ่านข้อมูลพนักงานทุกคนจาก service แล้วเติมลงตาราง — * เรียกทุกครั้งที่ข้อมูลเปลี่ยน*/
+    private void setThaiFont() {
+        java.awt.Font thaiFont = new java.awt.Font("Leelawadee UI", java.awt.Font.PLAIN, 14);
+
+        javax.swing.UIManager.put("OptionPane.messageFont", thaiFont);
+        javax.swing.UIManager.put("OptionPane.buttonFont", thaiFont);
+        javax.swing.UIManager.put("OptionPane.titleFont", thaiFont);
+
+        lblWelcome.setFont(thaiFont);
+        lblLogin.setFont(thaiFont);
+        lblPassword.setFont(thaiFont);
+        lblPosition.setFont(thaiFont);
+        lblRole.setFont(thaiFont);
+
+        txtLogin.setFont(thaiFont);
+        txtPassword.setFont(thaiFont);
+        txtPosition.setFont(thaiFont);
+        cmbRole.setFont(thaiFont);
+
+        btnSave.setFont(thaiFont);
+        btnNew.setFont(thaiFont);
+        btnDelete.setFont(thaiFont);
+        btnRefresh.setFont(thaiFont);
+
+        tblEmployee.setFont(thaiFont);
+        tblEmployee.getTableHeader().setFont(
+                new java.awt.Font("Leelawadee UI", java.awt.Font.BOLD, 14)
+        );
+    }
+
+    /**
+     * * * อ่านข้อมูลพนักงานทุกคนจาก service แล้วเติมลงตาราง — * * เรียกทุกครั้งที่ข้อมูลเปลี่ยน
+     */
     private void showEmployees() {
         // ตั้งหัวคอลัมน์แล้วเติมแถวจากฐานข้อมูลใหม่ทั้งหมด
         // isCellEditable = false: ตารางไว้ "ดู" เท่านั้น — แก้ข้อมูลต้องผ่านฟอร์มด้านบนแล้วบันทึก จึงลงฐานข้อมูลจริง
         DefaultTableModel model = new DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "รหัส", "ชื่อล็อกอิน", "ตำแหน่ง", "รหัสผ่าน", "บทบาท"
+                    "id", "user", "position", "password", "role"
                 }) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -258,5 +373,50 @@ public EmployeeFrame(Employee loginUser) {
             });
         }
         tblEmployee.setModel(model);
+    }
+        /**
+         * * แปลงเลขบทบาทเป็นข้อความสำหรับคอลัมน์ "บทบาท" ในตาราง
+         */
+    private String roleName(int role) {
+        return role == 1 ? "manager" : "employee";
+    }
+
+    private void tblEmployeeValueChanged(javax.swing.event.ListSelectionEvent evt) {
+        if (evt.getValueIsAdjusting()) {
+            return; // event นี้ยิง 2 รอบต่อการคลิก 1 ครั้ง — รอบแรก (selection ยังปรับไม่จบ) ข้ามไปก่อน
+        }
+        int row = tblEmployee.getSelectedRow();
+        if (row == -1) {
+            return; // ช่วงล้างตาราง/ล้างฟอร์ม — ไม่มีแถวถูกเลือก ไม่ต้องทำอะไร
+        }
+        int id = (Integer) tblEmployee.getValueAt(row, 0);
+        Employee emp = employeeService.get(id);
+        if (emp == null) {
+            return;
+        }
+        editingId = emp.getId();
+        txtLogin.setText(emp.getName());
+        txtPosition.setText(emp.getPosition());
+        txtPassword.setText(emp.getPassword());
+        setSelectedRole(emp.getRole());
+    }
+
+    private void clearForm() {
+        editingId = -1;
+        tblEmployee.clearSelection(); // จะเรียก valueChanged กลับมาด้วยแถว -1 (มี guard รออยู่)
+        txtLogin.setText("");
+        txtPosition.setText("");
+        txtPassword.setText("");
+        cmbRole.setSelectedIndex(0);
+    }
+
+    /*** แปลงรายการที่เลือกใน cmbRole เป็นเลข role ที่เก็บในฐานข้อมูล*/
+    private int getSelectedRole() {
+        return cmbRole.getSelectedIndex() == 1 ? 1 : 2;
+    }
+
+    /** ตั้ง cmbRole ให้ตรงกับเลข role ที่เก็บในฐานข้อมูล*/
+    private void setSelectedRole(int role) {
+        cmbRole.setSelectedIndex(role == 1 ? 1 : 0);
     }
 }

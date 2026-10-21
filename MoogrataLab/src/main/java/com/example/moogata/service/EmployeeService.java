@@ -8,13 +8,14 @@ package com.example.moogata.service;
  *
  * @author USER
  */
-
 import com.example.moogata.dao.EmployeeDao;
 import com.example.moogata.model.Employee;
 import java.util.List;
 
 public class EmployeeService {
+
     private final EmployeeDao employeeDao = new EmployeeDao();
+
     public Employee login(String name, String password) {
         Employee employee = employeeDao.getByName(name);
         if (employee != null && employee.getPassword().equals(password)) {
@@ -24,30 +25,41 @@ public class EmployeeService {
     }
     // ===== เพิ่มใน Lab 11 — เปิดบริการ CRUD ที่ EmployeeDao รองรับอยู่แล้ว ให้หน้าจอใช้ =====
 
-/** พนักงานทุกคน — ใช้โดย EmployeeFrame เพื่อเติมตาราง */
-public List<Employee> getAll() {
-    return employeeDao.getAll();
-}
+    /**
+     * พนักงานทุกคน — ใช้โดย EmployeeFrame เพื่อเติมตาราง
+     */
+    public List<Employee> getAll() {
+        return employeeDao.getAll();
+    }
 
-/** พนักงาน 1 คนจาก id — ใช้โดย EmployeeFrame ตอนคลิกเลือกแถวในตาราง */
-public Employee get(int id) {
-    return employeeDao.get(id);
-}
+    /**
+     * พนักงาน 1 คนจาก id — ใช้โดย EmployeeFrame ตอนคลิกเลือกแถวในตาราง
+     */
+    public Employee get(int id) {
+        return employeeDao.get(id);
+    }
 
-/** เพิ่มพนักงานใหม่ — สำเร็จได้ object กลับมาพร้อม id, ล้มเหลว (ชื่อซ้ำ) ได้ null */
-public Employee save(Employee employee) {
-    return employeeDao.save(employee);
-}
+    /**
+     * เพิ่มพนักงานใหม่ — สำเร็จได้ object กลับมาพร้อม id, ล้มเหลว (ชื่อซ้ำ) ได้
+     * null
+     */
+    public Employee save(Employee employee) {
+        return employeeDao.save(employee);
+    }
 
-/** แก้ไขพนักงาน — สำเร็จได้ object กลับมา, ไม่พบแถว/ล้มเหลวได้ null */
-public Employee update(Employee employee) {
-    return employeeDao.update(employee);
-}
+    /**
+     * แก้ไขพนักงาน — สำเร็จได้ object กลับมา, ไม่พบแถว/ล้มเหลวได้ null
+     */
+    public Employee update(Employee employee) {
+        return employeeDao.update(employee);
+    }
 
-/** ลบพนักงานตาม id — คืนจำนวนแถวที่ถูกลบ (0 = ไม่พบ, -1 = ผิดพลาด) */
-public int delete(int id) {
-    Employee target = new Employee();
-    target.setId(id);
-    return employeeDao.delete(target);
-}
+    /**
+     * ลบพนักงานตาม id — คืนจำนวนแถวที่ถูกลบ (0 = ไม่พบ, -1 = ผิดพลาด)
+     */
+    public int delete(int id) {
+        Employee target = new Employee();
+        target.setId(id);
+        return employeeDao.delete(target);
+    }
 }
