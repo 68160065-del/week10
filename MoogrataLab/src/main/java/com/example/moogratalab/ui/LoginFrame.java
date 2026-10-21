@@ -136,6 +136,20 @@ public class LoginFrame extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this,
                 "Wellcom " + employee.getName() + " (" + employee.getPosition() + ")",
                 "Login Successfull", JOptionPane.INFORMATION_MESSAGE);
+              // เดิม (Step 4):  JOptionPane.showMessageDialog(this, "ยินดีต้อนรับ ...");
+              // เปลี่ยนเป็น:
+              // กฎธุรกิจ: หน้าจัดการพนักงานเปิดเฉพาะผู้จัดการ (role = 1) เท่านั้น
+        if (employee.getRole() != 1) {
+            JOptionPane.showMessageDialog(this,
+                    employee.getName() + " ไม่ใช่ผู้จัดการ จึงเข้าหน้าจัดการพนักงานไม่ได้",
+                    "ไม่มีสิทธิ์เข้าใช้", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EmployeeFrame employeeFrame = new EmployeeFrame(employee);
+        employeeFrame.setLocationRelativeTo(this);
+        employeeFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
